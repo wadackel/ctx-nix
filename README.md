@@ -9,7 +9,8 @@ binary. It is intended for users who want a Nix-managed `ctx` package while
 ## Why this flake
 
 - Provide a Nix package and overlay for the upstream `ctx` release binaries.
-- Track upstream releases through a small `sources.json` pin file.
+- Track the newest Nix-compatible upstream release through a small
+  `sources.json` pin file.
 - Verify refreshed release assets against upstream `SHA256SUMS` before writing
   new Nix SRI hashes.
 
@@ -71,14 +72,16 @@ binary installed by this flake.
 
 The scheduled GitHub Actions workflow:
 
-1. Calls `gh api repos/ctxrs/ctx/releases/latest`.
+1. Lists stable `ctxrs/ctx` GitHub releases.
 2. Accepts only stable tags matching `^vX.Y.Z$`.
-3. Downloads upstream `SHA256SUMS`.
-4. Downloads each selected Linux/macOS asset and checks its SHA-256 digest
+3. Skips Linux assets that require a newer glibc than this flake's pinned
+   Nixpkgs provides.
+4. Downloads upstream `SHA256SUMS`.
+5. Downloads each selected Linux/macOS asset and checks its SHA-256 digest
    against `SHA256SUMS`.
-5. Computes the Nix SRI hash from the verified bytes and atomically rewrites
+6. Computes the Nix SRI hash from the verified bytes and atomically rewrites
    `sources.json`.
-6. Re-runs the flake checks before committing and pushing the refreshed pin.
+7. Re-runs the flake checks before committing and pushing the refreshed pin.
 
 This is a checksum-verified update-time trust model. Builds are pinned by the
 SRI hashes in `sources.json`; update verification checks that those hashes were
@@ -97,7 +100,7 @@ just update
 ```
 
 `just update` prints `changed` when `sources.json` is rewritten and `unchanged`
-when the repository already tracks the latest upstream release.
+when the repository already tracks the selected compatible upstream release.
 
 ## License
 

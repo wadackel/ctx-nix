@@ -5,6 +5,8 @@ import {
   assertThrows,
 } from "jsr:@std/assert@1";
 import {
+  compareVersions,
+  maxGlibcSymbolVersion,
   parseSha256Sums,
   PLATFORMS,
   sha256Hex,
@@ -66,11 +68,25 @@ Deno.test("parseSha256Sums rejects malformed lines", () => {
   );
 });
 
+Deno.test("maxGlibcSymbolVersion returns the highest referenced GLIBC symbol", () => {
+  const bytes = new TextEncoder().encode("GLIBC_2.39\0GLIBC_2.43\0GLIBC_2.4");
+  assertEquals(maxGlibcSymbolVersion(bytes), "2.43");
+});
+
+Deno.test("compareVersions compares numeric version segments", () => {
+  assert(compareVersions("2.43", "2.42") > 0);
+  assert(compareVersions("2.9", "2.39") < 0);
+  assertEquals(compareVersions("2.42", "2.42-67"), 0);
+});
+
 Deno.test("sha256 helpers return expected hex and SRI formats", async () => {
   const empty = new Uint8Array(0);
   assertEquals(
     await sha256Hex(empty),
     "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   );
-  assertEquals(await sriHash(empty), "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=");
+  assertEquals(
+    await sriHash(empty),
+    "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+  );
 });
