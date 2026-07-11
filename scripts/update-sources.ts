@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read --allow-write --allow-run --allow-env --allow-net
+#!/usr/bin/env -S deno run --allow-read=sources.json,flake.lock --allow-write=. --allow-run=gh,nix --allow-env=HOME,GH_TOKEN --allow-net=api.github.com,github.com,release-assets.githubusercontent.com,objects.githubusercontent.com
 
 // Refresh sources.json against the latest stable ctxrs/ctx release that is
 // compatible with the pinned Nixpkgs Linux glibc.
@@ -79,6 +79,8 @@ async function fetchReleases(): Promise<Release[]> {
       "api",
       `repos/${UPSTREAM_OWNER}/${UPSTREAM_REPO}/releases?per_page=30`,
     ],
+    clearEnv: true,
+    env: commandEnv(),
     stdout: "piped",
     stderr: "piped",
   });
@@ -203,6 +205,8 @@ async function readPinnedLinuxGlibcVersion(): Promise<string> {
       "--raw",
       `github:nixos/nixpkgs/${rev}#legacyPackages.x86_64-linux.glibc.version`,
     ],
+    clearEnv: true,
+    env: commandEnv(),
     stdout: "piped",
     stderr: "piped",
   });
@@ -215,6 +219,15 @@ async function readPinnedLinuxGlibcVersion(): Promise<string> {
     );
   }
   return new TextDecoder().decode(stdout).trim();
+}
+
+function commandEnv(): Record<string, string> {
+  const env: Record<string, string> = {};
+  const home = Deno.env.get("HOME");
+  if (home) env.HOME = home;
+  const token = Deno.env.get("GH_TOKEN");
+  if (token) env.GH_TOKEN = token;
+  return env;
 }
 
 async function selectRelease(

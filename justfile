@@ -5,7 +5,7 @@ default:
 
 # Refresh sources.json against the latest stable ctxrs/ctx release.
 update:
-    @deno run --allow-read --allow-write --allow-run --allow-env --allow-net scripts/update-sources.ts
+    @deno run --allow-read=sources.json,flake.lock --allow-write=. --allow-run=gh,nix --allow-env=HOME,GH_TOKEN --allow-net=api.github.com,github.com,release-assets.githubusercontent.com,objects.githubusercontent.com scripts/update-sources.ts
 
 # Run the full flake check.
 check:
