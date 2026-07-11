@@ -1,0 +1,53 @@
+name: Update sources
+
+on:
+  schedule:
+    - cron: "23 19 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        with:
+          determinate: false
+      - name: Run update script
+        id: update
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          result=$(nix develop -c just update)
+          printf '%s\n' "$result"
+          case "$result" in
+            changed|unchanged) ;;
+            *)
+              printf 'unexpected update-script output: %s\n' "$result" >&2
+              exit 1
+              ;;
+          esac
+          printf 'result=%s\n' "$result" >> "$GITHUB_OUTPUT"
+      - name: Verify flake
+        if: steps.update.outputs.result == 'changed'
+        run: nix develop -c just check
+      - name: Commit and push
+        if: steps.update.outputs.result == 'changed'
+        shell: bash
+        run: |
+          set -euo pipefail
+          tag=$(nix develop -c jq -r .tag sources.json)
+          if ! [[ "$tag" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]; then
+            printf 'refusing tag with unexpected shape: %s\n' "$tag" >&2
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sources.json
+          git commit -m "chore: bump ctx to ${tag}"
+          git push

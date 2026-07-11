@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+        with:
+          determinate: false
+      - name: Flake check (current system)
+        run: nix develop -c just check
+      - name: Evaluate all supported systems
+        run: nix develop -c nix flake show --all-systems
+      - name: Format check
+        run: nix develop -c nixfmt --check flake.nix
+      - name: Build ctx for current system
+        run: nix develop -c just build
+      - name: Smoke run ctx --version
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual=$(./result/bin/ctx --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+          expected=$(nix develop -c jq -re '.version' sources.json)
+          printf 'ctx --version: actual=%s expected=%s\n' "$actual" "$expected"
+          [ "$actual" = "$expected" ] || { echo "version mismatch" >&2; exit 1; }
+      - name: Deno unit tests
+        run: nix develop -c just test
