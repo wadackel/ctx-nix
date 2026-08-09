@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --allow-read=sources.json,flake.lock --allow-write=. --allow-run=gh,nix --allow-env=HOME,GH_TOKEN --allow-net=api.github.com,github.com,release-assets.githubusercontent.com,objects.githubusercontent.com
+#!/usr/bin/env -S deno run --allow-read=. --allow-write=. --allow-run=gh,nix --allow-env=HOME,GH_TOKEN --allow-net=api.github.com,github.com,release-assets.githubusercontent.com,objects.githubusercontent.com
 
 // Refresh sources.json against the latest stable ctxrs/ctx release that is
 // compatible with the pinned Nixpkgs Linux glibc.
@@ -191,6 +191,9 @@ async function readCurrent(): Promise<Sources | null> {
 }
 
 async function writeAtomic(next: Sources): Promise<void> {
+  // Deno.rename checks read permission on both paths, and the temp name is a
+  // UUID that no --allow-read list can enumerate. Narrowing read access back to
+  // the individual files breaks this line, not the write above it.
   const tmp = `${sourcesPath}.tmp.${crypto.randomUUID()}`;
   await Deno.writeTextFile(tmp, JSON.stringify(next, null, 2) + "\n");
   await Deno.rename(tmp, sourcesPath);

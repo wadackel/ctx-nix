@@ -1,0 +1,15 @@
+name: Setup Nix
+description: Install Nix with the Determinate Systems installer.
+
+# No Nix store cache step here: a partially restored store keeps its database
+# intact while dropping paths, so every later `nix develop` dies on the first
+# missing one, and a failed restore is only a warning so the job never falls
+# back to a cache miss. Cold runs cost about a minute for this repo, and the
+# derivation is fetchurl + copy with no compile step.
+runs:
+  using: composite
+  steps:
+    - uses: DeterminateSystems/nix-installer-action@ef8a148080ab6020fd15196c2084a2eea5ff2d25 # v22
+      with:
+        # v21 changed the default to `true`. Keep upstream Nix behavior.
+        determinate: false
