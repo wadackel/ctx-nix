@@ -20,10 +20,12 @@ jobs:
   update:
     runs-on: ubuntu-latest
     # Every step below carries its own timeout and they sum to less than this,
-    # so a hang always trips the step rather than the job. That distinction
-    # matters: a step timeout fails the step and the notification at the end
-    # still fires, while a job timeout is a cancel and would pass over it
+    # so a hang in a shell step trips the step rather than the job. That
+    # distinction matters: a step timeout fails the step and the notification at
+    # the end still fires, while a job timeout is a cancel and would pass over it
     # silently — the exact "fails unnoticed" mode this workflow guards against.
+    # The runner does not reliably enforce a step timeout on a composite action,
+    # so a hang inside setup-nix falls through to this job timeout and is lost.
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

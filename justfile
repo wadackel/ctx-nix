@@ -4,10 +4,10 @@ default:
     @just --list
 
 # Refresh sources.json against the latest stable ctxrs/ctx release.
-# Read access is granted per-directory, not per-file: the atomic write in
-# update-sources.ts renames a UUID-suffixed temp file, Deno.rename checks read
-# on both paths, and --allow-read takes no globs. Every path the script touches
-# lives under the repository root, so the directory is the tight scope.
+# update-sources.ts finishes its write by renaming a UUID-suffixed temp file,
+# Deno.rename requires read on the source, and --allow-read takes no globs — so
+# no per-file list can ever name that path. Every path the script touches lives
+# under the repository root, so the directory is the tight scope.
 update:
     @deno run --allow-read=. --allow-write=. --allow-run=gh,nix --allow-env=HOME,GH_TOKEN --allow-net=api.github.com,github.com,release-assets.githubusercontent.com,objects.githubusercontent.com scripts/update-sources.ts
 

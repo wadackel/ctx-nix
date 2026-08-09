@@ -191,7 +191,7 @@ async function readCurrent(): Promise<Sources | null> {
 }
 
 async function writeAtomic(next: Sources): Promise<void> {
-  // Deno.rename checks read permission on both paths, and the temp name is a
+  // Deno.rename requires read permission on the source, and this temp name is a
   // UUID that no --allow-read list can enumerate. Narrowing read access back to
   // the individual files breaks this line, not the write above it.
   const tmp = `${sourcesPath}.tmp.${crypto.randomUUID()}`;
