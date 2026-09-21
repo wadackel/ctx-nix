@@ -1,28 +1,28 @@
 {
-  "version": "1.4.12",
-  "tag": "v1.4.12",
+  "version": "1.5.0",
+  "tag": "v1.5.0",
   "systems": {
     "aarch64-darwin": {
-      "url": "https://github.com/ctxrs/ctx/releases/download/v1.4.12/ctx-macos-arm64",
-      "hash": "sha256-WOyWHBkABLEH0OJrkYprmPg2zEa+k7R7551D1GaG5bg=",
+      "url": "https://github.com/ctxrs/ctx/releases/download/v1.5.0/ctx-macos-arm64",
+      "hash": "sha256-RPYD2T4xH+rEa+WtLpIS4F3Ab4gixNKK4OyyEyY3B7Q=",
       "assetName": "ctx-macos-arm64",
       "binaryName": "ctx"
     },
     "x86_64-darwin": {
-      "url": "https://github.com/ctxrs/ctx/releases/download/v1.4.12/ctx-macos-x64",
-      "hash": "sha256-Yvi1ZINl1DLIhxQnYENS202nbQ0Uxcy/l07vWE0yvFg=",
+      "url": "https://github.com/ctxrs/ctx/releases/download/v1.5.0/ctx-macos-x64",
+      "hash": "sha256-jJywLPXUP3fiA9aaoHu66igQy5nDZHoLiho0Vb1LAXw=",
       "assetName": "ctx-macos-x64",
       "binaryName": "ctx"
     },
     "aarch64-linux": {
-      "url": "https://github.com/ctxrs/ctx/releases/download/v1.4.12/ctx-linux-aarch64",
-      "hash": "sha256-lFMsUT82n8cgybMbVd++CcoZlnUeWNBXvKprWwDTY+0=",
+      "url": "https://github.com/ctxrs/ctx/releases/download/v1.5.0/ctx-linux-aarch64",
+      "hash": "sha256-YXFghsJu27gST4bs9Jc0U54f6/2Y+nB5gyOUL3m8YKI=",
       "assetName": "ctx-linux-aarch64",
       "binaryName": "ctx"
     },
     "x86_64-linux": {
-      "url": "https://github.com/ctxrs/ctx/releases/download/v1.4.12/ctx-linux-x64",
-      "hash": "sha256-FupfhzD95Cvd2jprdXJzFHFc7LhFSt2qVjLDtTC4a7Y=",
+      "url": "https://github.com/ctxrs/ctx/releases/download/v1.5.0/ctx-linux-x64",
+      "hash": "sha256-6aVavMR0HMBlSC4NnKvRw+lfPxsAZkPB40wFOSJN3rQ=",
       "assetName": "ctx-linux-x64",
       "binaryName": "ctx"
     }
